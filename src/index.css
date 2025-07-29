@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,115 +11,108 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Core ISAC colors - dark tactical theme */
+    /* === CORE TACTICAL COLORS === */
+    /* Background System */
     --background: 220 15% 8%;
+    --background-elevated: 220 15% 10%;
+    --background-overlay: 220 15% 6%;
     --foreground: 25 95% 65%;
+    --foreground-muted: 25 85% 70%;
+    --foreground-subtle: 25 40% 55%;
 
-    /* Tactical orange accents */
+    /* === TACTICAL ORANGE SYSTEM === */
     --primary: 25 95% 65%;
     --primary-foreground: 220 15% 8%;
     --primary-glow: 25 100% 75%;
+    --primary-muted: 25 60% 45%;
+    --primary-subtle: 25 40% 25%;
 
-    /* Secondary tactical elements */
-    --secondary: 220 15% 15%;
-    --secondary-foreground: 25 95% 65%;
-
-    /* Interface elements */
+    /* === INTERFACE ELEMENTS === */
     --card: 220 15% 12%;
     --card-foreground: 25 85% 70%;
     --card-border: 25 60% 45%;
+    --card-elevated: 220 15% 15%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 25 95% 65%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 25 40% 55%;
+
+    --accent: 25 85% 60%;
+    --accent-foreground: 220 15% 8%;
 
     --popover: 220 15% 10%;
     --popover-foreground: 25 85% 70%;
 
-    /* Muted elements */
-    --muted: 220 15% 18%;
-    --muted-foreground: 25 40% 55%;
+    /* === STATUS COLORS === */
+    --success: 120 60% 55%;
+    --success-foreground: 220 15% 8%;
+    --success-muted: 120 40% 35%;
 
-    /* Accent colors */
-    --accent: 25 85% 60%;
-    --accent-foreground: 220 15% 8%;
+    --warning: 45 95% 65%;
+    --warning-foreground: 220 15% 8%;
+    --warning-muted: 45 75% 45%;
 
-    /* Status colors */
     --destructive: 0 85% 65%;
     --destructive-foreground: 220 15% 8%;
-    --success: 120 60% 55%;
-    --warning: 45 95% 65%;
+    --destructive-muted: 0 65% 45%;
 
-    /* Interface borders and inputs */
+    --info: 200 90% 60%;
+    --info-foreground: 220 15% 8%;
+
+    /* === INTERFACE CONTROLS === */
     --border: 25 40% 25%;
-    --input: 220 15% 15%;
-    --ring: 25 95% 65%;
+    --border-muted: 25 20% 20%;
+    --border-bright: 25 60% 45%;
 
-    /* Tactical gradients */
+    --input: 220 15% 15%;
+    --input-border: 25 40% 25%;
+    --input-focus: 25 60% 45%;
+
+    --ring: 25 95% 65%;
+    --ring-offset: 220 15% 8%;
+
+    /* === TACTICAL GRADIENTS === */
     --gradient-primary: linear-gradient(135deg, hsl(25 95% 65%), hsl(25 100% 75%));
     --gradient-tactical: linear-gradient(45deg, hsl(220 15% 8%), hsl(220 15% 15%));
     --gradient-overlay: linear-gradient(180deg, transparent, hsl(25 95% 65% / 0.1));
+    --gradient-card: linear-gradient(135deg, hsl(220 15% 12%), hsl(220 15% 15%));
+    --gradient-glow: radial-gradient(circle, hsl(25 95% 65% / 0.3), transparent);
 
-    /* Shadows and glows */
+    /* === SHADOWS AND EFFECTS === */
     --shadow-tactical: 0 4px 20px -4px hsl(25 95% 65% / 0.3);
     --shadow-glow: 0 0 20px hsl(25 95% 65% / 0.4);
     --shadow-deep: 0 8px 32px -8px hsl(220 15% 8% / 0.8);
+    --shadow-subtle: 0 2px 8px -2px hsl(220 15% 8% / 0.4);
+    --shadow-inner: inset 0 0 10px hsl(25 95% 65% / 0.05);
 
-    /* Animations */
+    /* === ANIMATION TIMING === */
     --transition-tactical: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --pulse-glow: 0 0 0 0 hsl(25 95% 65% / 0.7);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* === COMPONENT SPECIFIC === */
     --radius: 0.25rem;
+    --radius-sm: 0.125rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar specific colors */
+    --sidebar-background: 220 15% 10%;
+    --sidebar-foreground: 25 85% 70%;
+    --sidebar-primary: 25 95% 65%;
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 220 15% 15%;
+    --sidebar-accent-foreground: 25 85% 70%;
+    --sidebar-border: 25 40% 25%;
+    --sidebar-ring: 25 95% 65%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Keep dark mode overrides but ensure they align with tactical theme */
+    --background: 220 15% 6%;
+    --background-elevated: 220 15% 8%;
   }
 }
 
@@ -129,12 +125,13 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-mono;
     background-image: 
       radial-gradient(circle at 20% 80%, hsl(25 95% 65% / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(25 95% 65% / 0.03) 0%, transparent 50%);
+      radial-gradient(circle at 80% 20%, hsl(25 95% 65% / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsl(25 95% 65% / 0.01) 0%, transparent 50%);
   }
 }
 
 @layer components {
-  /* ISAC Interface Components */
+  /* === TACTICAL INTERFACE COMPONENTS === */
   .tactical-border {
     @apply border border-border;
     box-shadow: 0 0 10px hsl(var(--primary) / 0.2), inset 0 0 10px hsl(var(--primary) / 0.05);
@@ -146,9 +143,24 @@ All colors MUST be HSL.
     animation: pulse-glow 2s infinite;
   }
 
+  .tactical-panel {
+    @apply bg-card border tactical-border rounded-sm p-4;
+    background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--card-elevated)));
+    backdrop-filter: blur(10px);
+  }
+
+  .holographic-panel {
+    @apply relative p-6 rounded-sm;
+    background: linear-gradient(135deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.4));
+    border: 1px solid hsl(var(--primary) / 0.3);
+    backdrop-filter: blur(15px);
+    box-shadow: var(--shadow-tactical);
+    animation: hologram-flicker 2s ease-in-out infinite;
+  }
+
   .status-panel {
     @apply bg-card border tactical-border rounded-sm p-4;
-    background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--card)) 50%, hsl(var(--muted)));
+    background: var(--gradient-card);
   }
 
   .data-grid {
@@ -167,30 +179,100 @@ All colors MUST be HSL.
   .tactical-button {
     @apply bg-secondary hover:bg-accent text-foreground border border-border rounded-sm px-4 py-2;
     @apply transition-all duration-300 hover:shadow-tactical hover:scale-105;
-    background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--muted)));
+    background: var(--gradient-tactical);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .tactical-button:hover {
+    border-color: hsl(var(--primary));
+    box-shadow: var(--shadow-tactical);
   }
 
   .critical-alert {
     @apply animate-pulse;
     box-shadow: 0 0 20px hsl(var(--destructive) / 0.5);
+    animation: status-blink 1s ease-in-out infinite;
+  }
+
+  .neural-network-node {
+    @apply absolute w-2 h-2 rounded-full bg-primary;
+    box-shadow: 0 0 6px hsl(var(--primary));
+    animation: energy-pulse 2s ease-out infinite;
+  }
+
+  .scan-line {
+    @apply absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent;
+    animation: tactical-scan 3s linear infinite;
+  }
+
+  .terminal-input {
+    @apply bg-transparent border-none outline-none text-foreground font-mono text-sm;
+    caret-color: hsl(var(--primary));
+  }
+
+  .holographic-scanlines {
+    @apply absolute inset-0 pointer-events-none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--primary) / 0.03) 2px,
+      hsl(var(--primary) / 0.03) 4px
+    );
   }
 }
 
 @layer utilities {
+  /* === TEXT UTILITIES === */
   .text-tactical {
     @apply text-primary;
     text-shadow: 0 0 8px hsl(var(--primary) / 0.5);
   }
 
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .text-scan {
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    background-size: 200% 100%;
+    animation: text-scan 2s linear infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* === BACKGROUND UTILITIES === */
   .bg-tactical-grid {
     background-image: 
       linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
     background-size: 30px 30px;
   }
+
+  .bg-neural-grid {
+    background-image: 
+      radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+
+  .bg-holographic {
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+  }
+
+  /* === BORDER UTILITIES === */
+  .border-tactical {
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.1);
+  }
+
+  .border-glow {
+    border: 1px solid hsl(var(--primary));
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
 }
 
-/* Keyframes */
+/* === ENHANCED KEYFRAMES === */
 @keyframes pulse-glow {
   0%, 100% {
     box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
@@ -206,6 +288,89 @@ All colors MUST be HSL.
 }
 
 @keyframes data-flow {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes status-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes interference {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+
+@keyframes matrix-rain {
+  0% { transform: translateY(-100vh); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  2% { opacity: 0.8; }
+  4% { opacity: 1; }
+  6% { opacity: 0.9; }
+  8% { opacity: 1; }
+}
+
+@keyframes energy-pulse {
+  0% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: scale(1.2); 
+    opacity: 0; 
+  }
+}
+
+@keyframes text-scan {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes neural-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.8; 
+  }
+  50% { 
+    transform: scale(1.5); 
+    opacity: 1; 
+  }
+}
+
+@keyframes tactical-boot {
+  0% { 
+    opacity: 0; 
+    transform: scaleY(0); 
+  }
+  50% { 
+    opacity: 0.5; 
+    transform: scaleY(0.5); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scaleY(1); 
+  }
 }

@@ -1,223 +1,553 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  MapPin, 
-  Users, 
-  Shield, 
+  MapContainer, 
+  TileLayer, 
+  Marker, 
+  Popup, 
+  Circle, 
+  Polygon,
+  useMap,
+  useMapEvents
+} from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { 
+  Map, 
+  Layers, 
   Target, 
-  AlertTriangle,
-  Radio,
-  Home,
-  Crosshair
+  AlertTriangle, 
+  Shield, 
+  Crosshair,
+  Radar,
+  Navigation,
+  Zap,
+  Users,
+  MapPin,
+  Activity,
+  Eye,
+  Settings,
+  Maximize,
+  Minimize,
+  RotateCcw,
+  Search,
+  Plus,
+  Minus
 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { MapServiceSelector, mapServices, type MapService } from '@/components/ui/map-service-selector';
+import { TacticalSwitch } from '@/components/ui/tactical-switch';
+import { cn } from '@/lib/utils';
 
-interface MapLocation {
+// Fix for default markers
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Custom tactical icons
+const createTacticalIcon = (color: string, symbol: string) => {
+  return L.divIcon({
+    className: 'custom-tactical-marker',
+    html: `
+      <div style="
+        background: ${color};
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        box-shadow: 0 0 10px ${color}40;
+      ">${symbol}</div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+};
+
+// Tactical icons
+const tacticalIcons = {
+  agent: createTacticalIcon('#22c55e', 'A'),
+  rogue: createTacticalIcon('#ef4444', 'R'),
+  threat: createTacticalIcon('#f59e0b', '⚠'),
+  objective: createTacticalIcon('#3b82f6', '○'),
+  extraction: createTacticalIcon('#8b5cf6', 'E'),
+  safehouse: createTacticalIcon('#10b981', 'S'),
+  darkzone: createTacticalIcon('#dc2626', 'D'),
+  contaminated: createTacticalIcon('#fbbf24', '☢'),
+};
+
+interface ThreatMarker {
   id: string;
-  name: string;
-  type: 'SAFEHOUSE' | 'DARKZONE' | 'CONTAMINATED' | 'OBJECTIVE' | 'AGENT' | 'ROGUE';
-  x: number;
-  y: number;
-  status: 'SECURE' | 'HOSTILE' | 'UNKNOWN' | 'COMPROMISED';
-  description?: string;
+  position: [number, number];
+  type: 'agent' | 'rogue' | 'threat' | 'objective' | 'extraction' | 'safehouse' | 'darkzone' | 'contaminated';
+  title: string;
+  description: string;
+  level: 'low' | 'medium' | 'high' | 'critical';
+  lastUpdated: string;
 }
 
-const locations: MapLocation[] = [
+interface TacticalZone {
+  id: string;
+  name: string;
+  type: 'safe' | 'contaminated' | 'dark' | 'hostile';
+  coordinates: [number, number][];
+  threatLevel: 'low' | 'medium' | 'high' | 'critical';
+  status: 'secure' | 'compromised' | 'unknown';
+}
+
+// Manhattan-based tactical data
+const manhattanCenter: [number, number] = [40.7831, -73.9712];
+
+const mockThreatMarkers: ThreatMarker[] = [
   {
-    id: 'SH-01',
-    name: 'Base of Operations',
-    type: 'SAFEHOUSE',
-    x: 25,
-    y: 60,
-    status: 'SECURE',
-    description: 'Primary command center'
+    id: '1',
+    position: [40.7905, -73.9593],
+    type: 'agent',
+    title: 'PHOENIX-01',
+    description: 'Agent on patrol in Central Park area',
+    level: 'low',
+    lastUpdated: '2m ago'
   },
   {
-    id: 'DZ-E',
-    name: 'Dark Zone East',
-    type: 'DARKZONE',
-    x: 70,
-    y: 30,
-    status: 'HOSTILE',
-    description: 'High-value loot area'
+    id: '2',
+    position: [40.7614, -73.9776],
+    type: 'rogue',
+    title: 'SHADOW-07',
+    description: 'Rogue agent detected in Times Square',
+    level: 'critical',
+    lastUpdated: '15m ago'
   },
   {
-    id: 'CZ-01',
-    name: 'Contaminated Zone',
-    type: 'CONTAMINATED',
-    x: 45,
-    y: 25,
-    status: 'COMPROMISED',
-    description: 'Viral contamination detected'
+    id: '3',
+    position: [40.7675, -73.9776],
+    type: 'threat',
+    title: 'Hostile Activity',
+    description: 'Unidentified threats in Hell\'s Kitchen',
+    level: 'high',
+    lastUpdated: '8m ago'
   },
   {
-    id: 'OBJ-1',
-    name: 'Supply Drop',
-    type: 'OBJECTIVE',
-    x: 60,
-    y: 70,
-    status: 'UNKNOWN',
-    description: 'Resupply point'
+    id: '4',
+    position: [40.7488, -73.9857],
+    type: 'safehouse',
+    title: 'Safe House Bravo',
+    description: 'Secure Division facility',
+    level: 'low',
+    lastUpdated: '1m ago'
   },
   {
-    id: 'AGT-01',
-    name: 'Phoenix-01',
-    type: 'AGENT',
-    x: 35,
-    y: 45,
-    status: 'SECURE'
-  },
-  {
-    id: 'RGU-01',
-    name: 'Shadow-07',
-    type: 'ROGUE',
-    x: 55,
-    y: 35,
-    status: 'HOSTILE',
-    description: 'Rogue Division agent'
+    id: '5',
+    position: [40.7282, -74.0776],
+    type: 'darkzone',
+    title: 'Dark Zone Alpha',
+    description: 'High-risk contaminated area',
+    level: 'critical',
+    lastUpdated: '5m ago'
   }
 ];
 
+const mockTacticalZones: TacticalZone[] = [
+  {
+    id: 'dz-01',
+    name: 'Dark Zone East',
+    type: 'dark',
+    coordinates: [
+      [40.7750, -73.9600],
+      [40.7850, -73.9600],
+      [40.7850, -73.9500],
+      [40.7750, -73.9500]
+    ],
+    threatLevel: 'critical',
+    status: 'compromised'
+  },
+  {
+    id: 'safe-01',
+    name: 'Safe Zone Alpha',
+    type: 'safe',
+    coordinates: [
+      [40.7450, -73.9900],
+      [40.7550, -73.9900],
+      [40.7550, -73.9800],
+      [40.7450, -73.9800]
+    ],
+    threatLevel: 'low',
+    status: 'secure'
+  }
+];
+
+// Map event handler component
+function MapEventHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+// Zoom control component
+function ZoomControl() {
+  const map = useMap();
+  
+  return (
+    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 bg-background/90 backdrop-blur-sm"
+        onClick={() => map.zoomIn()}
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 bg-background/90 backdrop-blur-sm"
+        onClick={() => map.zoomOut()}
+      >
+        <Minus className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 bg-background/90 backdrop-blur-sm"
+        onClick={() => map.setView(manhattanCenter, 12)}
+      >
+        <RotateCcw className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
 export default function TacticalMap() {
-  const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null);
+  const [selectedService, setSelectedService] = useState('cartodb-dark');
+  const [showThreats, setShowThreats] = useState(true);
+  const [showZones, setShowZones] = useState(true);
+  const [showAgents, setShowAgents] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(manhattanCenter);
+  const [mapZoom, setMapZoom] = useState(12);
+  const [threatMarkers, setThreatMarkers] = useState<ThreatMarker[]>(mockThreatMarkers);
+  const [selectedMarker, setSelectedMarker] = useState<ThreatMarker | null>(null);
 
-  const getLocationIcon = (type: MapLocation['type']) => {
-    switch (type) {
-      case 'SAFEHOUSE': return <Home className="w-4 h-4" />;
-      case 'DARKZONE': return <Shield className="w-4 h-4" />;
-      case 'CONTAMINATED': return <AlertTriangle className="w-4 h-4" />;
-      case 'OBJECTIVE': return <Target className="w-4 h-4" />;
-      case 'AGENT': return <Users className="w-4 h-4" />;
-      case 'ROGUE': return <Crosshair className="w-4 h-4" />;
-      default: return <MapPin className="w-4 h-4" />;
+  const currentService = mapServices.find(service => service.id === selectedService) || mapServices[0];
+
+  // Real-time threat updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setThreatMarkers(prev => prev.map(marker => ({
+        ...marker,
+        position: [
+          marker.position[0] + (Math.random() - 0.5) * 0.001,
+          marker.position[1] + (Math.random() - 0.5) * 0.001
+        ],
+        lastUpdated: Math.random() > 0.7 ? 'Just now' : marker.lastUpdated
+      })));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getZoneColor = (zone: TacticalZone) => {
+    switch (zone.type) {
+      case 'safe': return '#22c55e';
+      case 'contaminated': return '#f59e0b';
+      case 'dark': return '#dc2626';
+      case 'hostile': return '#ef4444';
+      default: return '#6b7280';
     }
   };
 
-  const getLocationColor = (type: MapLocation['type'], status: MapLocation['status']) => {
-    if (type === 'ROGUE') return 'text-destructive';
-    if (type === 'AGENT') return 'text-success';
-    if (type === 'CONTAMINATED') return 'text-warning';
-    
-    switch (status) {
-      case 'SECURE': return 'text-success';
-      case 'HOSTILE': return 'text-destructive';
-      case 'COMPROMISED': return 'text-warning';
-      case 'UNKNOWN': return 'text-primary';
-      default: return 'text-foreground';
+  const getThreatLevelColor = (level: string) => {
+    switch (level) {
+      case 'low': return '#22c55e';
+      case 'medium': return '#f59e0b';
+      case 'high': return '#f97316';
+      case 'critical': return '#dc2626';
+      default: return '#6b7280';
     }
   };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    console.log('Map clicked:', lat, lng);
+    // Handle map click for adding markers, waypoints, etc.
+  };
+
+  const filteredMarkers = threatMarkers.filter(marker => {
+    if (!showThreats && (marker.type === 'threat' || marker.type === 'contaminated')) return false;
+    if (!showAgents && (marker.type === 'agent' || marker.type === 'rogue')) return false;
+    return true;
+  });
 
   return (
-    <div className="status-panel space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-tactical text-lg font-bold tracking-wider">TACTICAL MAP</h3>
-        <div className="flex items-center space-x-2">
-          <Radio className="w-4 h-4 text-primary animate-pulse" />
-          <span className="text-xs text-muted-foreground">LIVE FEED</span>
-        </div>
-      </div>
-
-      {/* Map Container */}
-      <div className="relative h-64 bg-muted rounded border border-border overflow-hidden">
-        {/* Grid Background */}
-        <div className="absolute inset-0 bg-tactical-grid opacity-20"></div>
-        
-        {/* Map Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-primary/10"></div>
-        
-        {/* Locations */}
-        {locations.map((location) => (
-          <div
-            key={location.id}
-            className={`absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2 ${
-              selectedLocation?.id === location.id ? 'z-20' : 'z-10'
-            }`}
-            style={{ left: `${location.x}%`, top: `${location.y}%` }}
-            onClick={() => setSelectedLocation(location)}
-          >
-            <div className={`
-              relative p-2 rounded-full border border-current
-              ${getLocationColor(location.type, location.status)}
-              ${selectedLocation?.id === location.id ? 'scale-125 animate-pulse-glow' : 'hover:scale-110'}
-              transition-all duration-300
-            `}>
-              {getLocationIcon(location.type)}
-              
-              {/* Pulse animation for active locations */}
-              {(location.type === 'AGENT' || location.type === 'ROGUE') && (
-                <div className="absolute inset-0 rounded-full animate-ping border border-current opacity-50"></div>
-              )}
-            </div>
-            
-            {/* Location label */}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 whitespace-nowrap">
-              <span className="text-xs font-mono bg-background/80 px-1 rounded">
-                {location.name}
-              </span>
-            </div>
+    <Card variant="tactical" className={cn(
+      "relative",
+      isFullscreen && "fixed inset-0 z-50 rounded-none"
+    )}>
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Map className="w-5 h-5 text-primary" />
+            <CardTitle className="text-lg">TACTICAL MAP</CardTitle>
+            <Badge variant="success" size="sm">LIVE</Badge>
           </div>
-        ))}
-        
-        {/* Scanning line */}
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-primary animate-tactical-scan opacity-60"></div>
-      </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="h-8 w-8"
+            >
+              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
 
-      {/* Location Details */}
-      {selectedLocation && (
-        <div className="tactical-border p-3 space-y-2 animate-data-flow">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className={getLocationColor(selectedLocation.type, selectedLocation.status)}>
-                {getLocationIcon(selectedLocation.type)}
+      <CardContent className="p-0">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
+          {/* Map Controls */}
+          <div className="space-y-4">
+            {/* Map Service Selector */}
+            <MapServiceSelector
+              selectedService={selectedService}
+              onServiceChange={setSelectedService}
+              compact
+            />
+
+            {/* Layer Controls */}
+            <Card variant="ghost" className="p-3">
+              <div className="space-y-3">
+                <h4 className="text-sm font-tactical font-bold text-primary">
+                  TACTICAL LAYERS
+                </h4>
+                <div className="space-y-2">
+                  <TacticalSwitch
+                    checked={showThreats}
+                    onCheckedChange={setShowThreats}
+                    label="Threat Indicators"
+                    size="sm"
+                  />
+                  <TacticalSwitch
+                    checked={showZones}
+                    onCheckedChange={setShowZones}
+                    label="Zone Overlays"
+                    size="sm"
+                  />
+                  <TacticalSwitch
+                    checked={showAgents}
+                    onCheckedChange={setShowAgents}
+                    label="Agent Positions"
+                    size="sm"
+                  />
+                </div>
               </div>
-              <span className="font-mono font-bold text-sm">{selectedLocation.name}</span>
-            </div>
-            <span className={`text-xs font-bold ${getLocationColor(selectedLocation.type, selectedLocation.status)}`}>
-              {selectedLocation.status}
-            </span>
-          </div>
-          
-          <div className="text-xs text-muted-foreground">
-            ID: {selectedLocation.id} | TYPE: {selectedLocation.type}
-          </div>
-          
-          {selectedLocation.description && (
-            <div className="text-xs text-foreground">
-              {selectedLocation.description}
-            </div>
-          )}
-          
-          <div className="text-xs text-muted-foreground">
-            COORDINATES: {selectedLocation.x.toFixed(2)}, {selectedLocation.y.toFixed(2)}
-          </div>
-        </div>
-      )}
+            </Card>
 
-      {/* Map Legend */}
-      <div className="grid grid-cols-3 gap-2 text-xs">
-        <div className="flex items-center space-x-1">
-          <Home className="w-3 h-3 text-success" />
-          <span className="text-muted-foreground">SAFEHOUSE</span>
+            {/* Threat Summary */}
+            <Card variant="ghost" className="p-3">
+              <div className="space-y-3">
+                <h4 className="text-sm font-tactical font-bold text-primary">
+                  THREAT SUMMARY
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-success">
+                      {threatMarkers.filter(m => m.type === 'agent').length}
+                    </div>
+                    <div className="text-muted-foreground">AGENTS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-destructive">
+                      {threatMarkers.filter(m => m.type === 'rogue').length}
+                    </div>
+                    <div className="text-muted-foreground">ROGUE</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-warning">
+                      {threatMarkers.filter(m => m.type === 'threat').length}
+                    </div>
+                    <div className="text-muted-foreground">THREATS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-info">
+                      {threatMarkers.filter(m => m.type === 'safehouse').length}
+                    </div>
+                    <div className="text-muted-foreground">SAFE</div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Map Container */}
+          <div className="lg:col-span-3 relative">
+            <div className="h-96 lg:h-[500px] rounded-sm overflow-hidden border border-border">
+              <MapContainer
+                center={mapCenter}
+                zoom={mapZoom}
+                style={{ height: '100%', width: '100%' }}
+                zoomControl={false}
+              >
+                <TileLayer
+                  attribution={currentService.attribution}
+                  url={currentService.url}
+                  maxZoom={currentService.maxZoom}
+                />
+
+                {/* Map Event Handler */}
+                <MapEventHandler onMapClick={handleMapClick} />
+
+                {/* Custom Zoom Control */}
+                <ZoomControl />
+
+                {/* Tactical Zones */}
+                {showZones && mockTacticalZones.map((zone) => (
+                  <Polygon
+                    key={zone.id}
+                    positions={zone.coordinates}
+                    pathOptions={{
+                      color: getZoneColor(zone),
+                      fillColor: getZoneColor(zone),
+                      fillOpacity: 0.2,
+                      weight: 2,
+                      opacity: 0.8
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2">
+                        <div className="font-bold text-sm">{zone.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          Type: {zone.type.toUpperCase()}
+                        </div>
+                        <div className="text-xs">
+                          Status: <span className={`font-bold ${
+                            zone.status === 'secure' ? 'text-success' : 
+                            zone.status === 'compromised' ? 'text-destructive' : 'text-warning'
+                          }`}>
+                            {zone.status.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Polygon>
+                ))}
+
+                {/* Threat Markers */}
+                {filteredMarkers.map((marker) => (
+                  <Marker
+                    key={marker.id}
+                    position={marker.position}
+                    icon={tacticalIcons[marker.type]}
+                    eventHandlers={{
+                      click: () => setSelectedMarker(marker),
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2 min-w-48">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="font-bold text-sm">{marker.title}</div>
+                          <Badge
+                            variant={
+                              marker.level === 'critical' ? 'destructive' :
+                              marker.level === 'high' ? 'warning' :
+                              marker.level === 'medium' ? 'secondary' : 'success'
+                            }
+                            size="sm"
+                          >
+                            {marker.level.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground mb-2">
+                          {marker.description}
+                        </div>
+                        <div className="text-xs">
+                          Last updated: {marker.lastUpdated}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Position: {marker.position[0].toFixed(4)}, {marker.position[1].toFixed(4)}
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+
+                {/* Threat Radius Circles */}
+                {showThreats && threatMarkers
+                  .filter(m => m.type === 'threat' || m.type === 'rogue')
+                  .map((marker) => (
+                    <Circle
+                      key={`${marker.id}-radius`}
+                      center={marker.position}
+                      radius={marker.level === 'critical' ? 500 : marker.level === 'high' ? 300 : 200}
+                      pathOptions={{
+                        color: getThreatLevelColor(marker.level),
+                        fillColor: getThreatLevelColor(marker.level),
+                        fillOpacity: 0.1,
+                        weight: 1,
+                        opacity: 0.6
+                      }}
+                    />
+                  ))}
+              </MapContainer>
+            </div>
+
+            {/* Map Overlay Info */}
+            <div className="absolute bottom-4 left-4 z-[1000] bg-background/90 backdrop-blur-sm rounded-sm p-2 border border-border">
+              <div className="text-xs font-mono space-y-1">
+                <div>Service: {currentService.name}</div>
+                <div>Zoom: {mapZoom}</div>
+                <div>Center: {mapCenter[0].toFixed(4)}, {mapCenter[1].toFixed(4)}</div>
+              </div>
+            </div>
+
+            {/* Selected Marker Info */}
+            {selectedMarker && (
+              <div className="absolute top-4 left-4 z-[1000] bg-background/95 backdrop-blur-sm rounded-sm p-3 border border-border min-w-64">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-tactical font-bold text-primary text-sm">
+                    {selectedMarker.title}
+                  </h4>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => setSelectedMarker(null)}
+                  >
+                    ×
+                  </Button>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div>Type: {selectedMarker.type.toUpperCase()}</div>
+                  <div>Threat Level: <span className={`font-bold ${
+                    selectedMarker.level === 'critical' ? 'text-destructive' :
+                    selectedMarker.level === 'high' ? 'text-warning' :
+                    selectedMarker.level === 'medium' ? 'text-secondary' : 'text-success'
+                  }`}>
+                    {selectedMarker.level.toUpperCase()}
+                  </span></div>
+                  <div>{selectedMarker.description}</div>
+                  <div className="text-muted-foreground">
+                    Last updated: {selectedMarker.lastUpdated}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-center space-x-1">
-          <Shield className="w-3 h-3 text-destructive" />
-          <span className="text-muted-foreground">DARK ZONE</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <AlertTriangle className="w-3 h-3 text-warning" />
-          <span className="text-muted-foreground">CONTAMINATED</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Users className="w-3 h-3 text-success" />
-          <span className="text-muted-foreground">AGENTS</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Crosshair className="w-3 h-3 text-destructive" />
-          <span className="text-muted-foreground">ROGUE</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Target className="w-3 h-3 text-primary" />
-          <span className="text-muted-foreground">OBJECTIVE</span>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
