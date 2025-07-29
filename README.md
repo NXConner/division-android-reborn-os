@@ -1,73 +1,215 @@
-# Welcome to your Lovable project
+# ISAC OS - Complete Tactical Interface
 
-## Project info
+*Division-Inspired Strategic Command Center*
 
 **URL**: https://lovable.dev/projects/35b71cd5-4eb6-4395-bc1c-5646e3083938
 
-## How can I edit this code?
+## 🎯 Overview
 
-There are several ways of editing your application.
+The **ISAC OS** is a comprehensive, military-grade tactical interface inspired by Tom Clancy's The Division franchise. Built with React, TypeScript, and modern web technologies, it provides an immersive cyberpunk/tactical command center experience with advanced visual effects, real-time data processing, and modular component architecture.
 
-**Use Lovable**
+## ✨ Key Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/35b71cd5-4eb6-4395-bc1c-5646e3083938) and start prompting.
+### 🎨 **Complete Tactical Design System**
+- **Dark Tactical Theme**: Military command center with orange tactical accents
+- **Cyberpunk Effects**: Glowing animations, scanning lines, holographic panels
+- **Typography**: JetBrains Mono & Orbitron tactical fonts
+- **15+ Custom Animations**: pulse-glow, tactical-scan, hologram-flicker, energy-pulse, etc.
+- **HSL Color System**: Comprehensive tactical color palette with semantic mapping
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🗺️ **Advanced Tactical Mapping (NEW)**
+- **10 Integrated Mapping Services**: Choose from multiple providers
+  - OpenStreetMap (Standard & Humanitarian)
+  - CartoDB (Positron & Dark Matter)
+  - Esri (World Imagery & Topographic)
+  - Stamen (Terrain & Toner)
+  - OpenTopoMap
+  - OpenCycleMap
+- **Interactive Features**:
+  - Real-time threat markers with custom tactical icons
+  - Zone control overlays (Safe, Dark, Contaminated, Hostile)
+  - Threat radius visualization
+  - Live agent tracking
+  - Click-to-inspect functionality
+  - Layer toggle controls
+  - Fullscreen mode
+- **Manhattan-Based Scenario**: Realistic NYC tactical operations
 
-**Use your preferred IDE**
+### 👥 **Comprehensive Agent Management**
+- **Real-time Agent Tracking**: Live health, armor, and position updates
+- **Detailed Agent Profiles**: 
+  - Skill trees (Medical, Tech, Security)
+  - Equipment loadouts
+  - Combat statistics (DPS, Toughness, Skill Power)
+  - Mission history and performance metrics
+- **Interactive Details View**: Click-through agent inspection
+- **Status Monitoring**: Active, Rogue, MIA, KIA tracking
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 📊 **Advanced Status Bar**
+- **Real-time System Metrics**: CPU, Memory, Temperature, Power
+- **Network Status**: Dynamic security monitoring
+- **Threat Level Assessment**: Live threat detection and classification
+- **Agent Status Overview**: Online agents and threat counts
+- **Dual-layer Design**: Main status bar + secondary information bar
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🧩 **Tactical Component Library**
+- **Enhanced Base Components**: 
+  - Buttons (10+ tactical variants)
+  - Cards (tactical, holographic, elevated variants)
+  - Badges (20+ status types)
+  - Progress bars with glow effects
+- **Specialized Components**:
+  - StatusIndicator (animated status display)
+  - HolographicPanel (advanced visual effects)
+  - TacticalSwitch (military-style toggles)
+  - CommandInput (terminal interface with history)
+  - LiveMetric (real-time data display)
 
-Follow these steps:
+### 🚀 **Navigation & Routing**
+- **10 Main Interface Sections**:
+  - Tactical Overview (Main dashboard)
+  - Division Agents (Agent management)
+  - Mission Board (Mission tracking)
+  - **Tactical Map (Interactive mapping)**
+  - System Diagnostics (Performance monitoring)
+  - Intelligence (Data analysis)
+  - Communications (Agent comms)
+  - Command Terminal (System access)
+  - Mission Reports (Analytics)
+  - System Configuration (Settings)
+- **Responsive Layout**: Collapsible sidebar with compact mode
+- **Seamless Navigation**: Smooth transitions between sections
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+## 🛠️ Technologies Used
+
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** with custom tactical theme
+- **Leaflet & React-Leaflet** for advanced mapping
+- **Radix UI** for accessible base components
+- **Lucide React** for consistent iconography
+- **React Router** for navigation
+- **Class Variance Authority** for component variants
+- **TanStack Query** for data management
+
+## 🎮 Interactive Features
+
+### 🗺️ **Tactical Map Interface**
+```typescript
+// 10 Available Map Services
+const mapServices = [
+  "OpenStreetMap Standard",     // Community-driven mapping
+  "OpenStreetMap Humanitarian", // Emergency-focused
+  "CartoDB Positron",          // Clean light theme
+  "CartoDB Dark Matter",       // Tactical dark theme
+  "Esri World Imagery",        // High-res satellite
+  "Esri World Topographic",    // Detailed topographic
+  "Stamen Terrain",            // Artistic terrain
+  "Stamen Toner",              // High contrast B&W
+  "OpenTopoMap",               // Topographic OSM
+  "OpenCycleMap"               // Cycling/outdoor
+];
+```
+
+- **Real-time Threat Tracking**: Live marker updates with animations
+- **Zone Control**: Visual overlays for different area types
+- **Tactical Icons**: Custom military-style markers
+- **Interactive Popups**: Detailed threat information
+- **Layer Controls**: Toggle visibility of different data layers
+- **Service Switching**: Real-time map provider switching
+
+### 👤 **Agent Management**
+- **Live Data Updates**: Real-time health and status changes
+- **Skill Progression**: Visual skill tree display
+- **Equipment Tracking**: Complete gear visualization
+- **Performance Metrics**: Combat effectiveness analysis
+- **Threat Assessment**: Dynamic threat level calculation
+
+### 📡 **System Monitoring**
+- **Live Metrics**: CPU, memory, temperature, network strength
+- **Dynamic Status**: Automatic threat level adjustments
+- **Alert System**: Real-time security notifications
+- **Performance Tracking**: System health visualization
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🎯 Advanced Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Map Service Selection
+Navigate to `/map` to access the full tactical mapping interface:
+- Choose from 10 different mapping services
+- Toggle threat indicators, zone overlays, and agent positions
+- Click markers for detailed threat information
+- Use fullscreen mode for enhanced operational view
 
-**Use GitHub Codespaces**
+### Agent Monitoring
+Access comprehensive agent management:
+- View real-time agent status and locations
+- Inspect detailed agent profiles with skill trees
+- Monitor rogue agent activities
+- Track mission performance metrics
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### System Dashboard
+Monitor all tactical operations:
+- Real-time system health metrics
+- Network security status
+- Threat level assessments
+- Agent deployment overview
 
-## What technologies are used for this project?
+## 🎨 Design Philosophy
 
-This project is built with:
+- **Information Density**: Efficient data presentation with clear hierarchy
+- **Tactical Aesthetics**: Military command center with orange accents
+- **Interactive Feedback**: Responsive animations and state changes
+- **Cyberpunk Elements**: Glowing effects, scanning lines, grid overlays
+- **Modular Architecture**: Scalable component system
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📱 Responsive Design
 
-## How can I deploy this project?
+- **Desktop**: Full tactical interface with all features
+- **Tablet**: Optimized layout with collapsible sidebar
+- **Mobile**: Compact interface with touch-friendly controls
 
-Simply open [Lovable](https://lovable.dev/projects/35b71cd5-4eb6-4395-bc1c-5646e3083938) and click on Share -> Publish.
+## 🔧 Deployment
 
-## Can I connect a custom domain to my Lovable project?
+Deploy easily with Lovable:
+1. Open [Lovable Project](https://lovable.dev/projects/35b71cd5-4eb6-4395-bc1c-5646e3083938)
+2. Click **Share → Publish**
+3. Access your tactical command center!
 
-Yes, you can!
+## 🌟 What's New
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Latest Updates:
+- ✅ **Advanced Tactical Mapping**: 10 integrated mapping services
+- ✅ **Real-time Threat Tracking**: Live Manhattan-based scenario
+- ✅ **Interactive Zone Control**: Visual area overlays
+- ✅ **Enhanced Agent Management**: Comprehensive profile system
+- ✅ **Tactical Component Library**: Military-grade UI components
+- ✅ **Comprehensive Navigation**: Full routing system
+- ✅ **Performance Optimizations**: Real-time data processing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Coming Soon:
+- Advanced data visualization components
+- Sound effects and audio feedback
+- Particle effects system
+- Mission planning interface
+- Communication system
+- Advanced analytics dashboard
+
+---
+
+*Built with precision for tactical excellence* 🎯

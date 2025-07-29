@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/ui/layout";
 import Index from "./pages/Index";
 import IsacOS from "./pages/IsacOS";
+import TacticalMap from "./components/isac/TacticalMap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,12 +55,17 @@ const App = () => (
           <Route path="/map" element={
             <Layout>
               <div className="space-y-6">
-                <h1 className="text-2xl font-tactical font-bold tracking-wider text-tactical">
-                  TACTICAL MAP
-                </h1>
-                <p className="text-muted-foreground">
-                  Real-time tactical mapping interface coming soon...
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-2xl font-tactical font-bold tracking-wider text-tactical">
+                      TACTICAL MAP INTERFACE
+                    </h1>
+                    <p className="text-muted-foreground font-mono">
+                      Real-time tactical mapping with 10 integrated mapping services • Live threat tracking • Zone control monitoring
+                    </p>
+                  </div>
+                </div>
+                <TacticalMap />
               </div>
             </Layout>
           } />
