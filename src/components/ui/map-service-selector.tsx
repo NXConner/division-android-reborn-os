@@ -194,7 +194,19 @@ const MapServiceSelector = React.forwardRef<HTMLDivElement, MapServiceSelectorPr
   ({ selectedService, onServiceChange, showDetails = true, compact = false, className, ...props }, ref) => {
     const [showAllDetails, setShowAllDetails] = useState(false)
     
-    const currentService = mapServices.find(service => service.id === selectedService) || mapServices[0]
+    // Resolve API-keyed services when key is provided; hide them otherwise
+    const thunderforestApiKey = (import.meta as any).env?.VITE_THUNDERFOREST_API_KEY as string | undefined
+    const availableServices = React.useMemo(() => {
+      const withKeys = mapServices.map((service) => {
+        if (service.id === 'cyclemap' && thunderforestApiKey) {
+          return { ...service, url: service.url.replace('YOUR_API_KEY', thunderforestApiKey) }
+        }
+        return service
+      })
+      return withKeys.filter((s) => !s.url.includes('YOUR_API_KEY'))
+    }, [thunderforestApiKey])
+    
+    const currentService = availableServices.find(service => service.id === selectedService) || availableServices[0]
     
     const getTypeColor = (type: string) => {
       switch (type) {
@@ -232,7 +244,7 @@ const MapServiceSelector = React.forwardRef<HTMLDivElement, MapServiceSelectorPr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {mapServices.map((service) => {
+              {availableServices.map((service) => {
                 const Icon = service.icon
                 return (
                   <SelectItem key={service.id} value={service.id}>
@@ -281,7 +293,7 @@ const MapServiceSelector = React.forwardRef<HTMLDivElement, MapServiceSelectorPr
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {mapServices.map((service) => {
+                {availableServices.map((service) => {
                   const Icon = service.icon
                   return (
                     <SelectItem key={service.id} value={service.id}>
