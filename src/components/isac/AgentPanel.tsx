@@ -398,131 +398,432 @@ export default function AgentPanel() {
   }
 
   return (
-    <Card variant="tactical" className="space-y-4">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Users className="w-5 h-5 text-primary" />
-            <CardTitle className="text-lg">DIVISION AGENTS</CardTitle>
-          </div>
-          <div className="flex items-center gap-4">
-            <TacticalSwitch
-              checked={autoTrack}
-              onCheckedChange={setAutoTrack}
-              label="Auto Track"
-              size="sm"
-            />
-            <div className="text-sm text-muted-foreground font-mono">
-              {activeAgents.length}/{totalAgents} ACTIVE
+    <div className="space-y-4">
+      <Card variant="tactical" className="shd-hex-border shd-radial-glow">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Users className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">DIVISION AGENTS</CardTitle>
+            </div>
+            <div className="flex items-center gap-4">
+              <TacticalSwitch
+                checked={autoTrack}
+                onCheckedChange={setAutoTrack}
+                label="Auto Track"
+                size="sm"
+              />
+              <div className="text-sm text-muted-foreground font-mono">
+                {activeAgents.length}/{totalAgents} ACTIVE
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Agent Summary */}
-        <div className="grid grid-cols-4 gap-4 mt-4">
-          <div className="text-center">
-            <div className="text-lg font-mono font-bold text-success">
-              {activeAgents.length}
+          {/* Agent Summary */}
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            <div className="text-center">
+              <div className="text-lg font-mono font-bold text-success">
+                {activeAgents.length}
+              </div>
+              <div className="text-xs text-muted-foreground">ACTIVE</div>
             </div>
-            <div className="text-xs text-muted-foreground">ACTIVE</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-mono font-bold text-destructive">
-              {rogueAgents.length}
+            <div className="text-center">
+              <div className="text-lg font-mono font-bold text-destructive">
+                {rogueAgents.length}
+              </div>
+              <div className="text-xs text-muted-foreground">ROGUE</div>
             </div>
-            <div className="text-xs text-muted-foreground">ROGUE</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-mono font-bold text-primary">
-              {agents.filter(a => a.isWatched).length}
+            <div className="text-center">
+              <div className="text-lg font-mono font-bold text-primary">
+                {agents.filter(a => a.isWatched).length}
+              </div>
+              <div className="text-xs text-muted-foreground">WATCHED</div>
             </div>
-            <div className="text-xs text-muted-foreground">WATCHED</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-mono font-bold text-warning">
-              {agents.filter(a => a.threatLevel === 'HIGH' || a.threatLevel === 'CRITICAL').length}
+            <div className="text-center">
+              <div className="text-lg font-mono font-bold text-warning">
+                {agents.filter(a => a.threatLevel === 'HIGH' || a.threatLevel === 'CRITICAL').length}
+              </div>
+              <div className="text-xs text-muted-foreground">THREATS</div>
             </div>
-            <div className="text-xs text-muted-foreground">THREATS</div>
           </div>
-        </div>
-      </CardHeader>
+        </CardHeader>
 
-      <CardContent className="space-y-3">
-        {agents.map((agent) => (
-          <div key={agent.id} className="tactical-panel p-3 space-y-3 hover:border-primary/50 transition-all duration-300 cursor-pointer"
-               onClick={() => {setSelectedAgent(agent); setViewMode('details');}}>
+        <CardContent className="space-y-3">
+          {agents.map((agent) => (
+            <div key={agent.id} className="tactical-panel p-3 space-y-3 hover:border-primary/50 transition-all duration-300 cursor-pointer"
+                 onClick={() => {setSelectedAgent(agent); setViewMode('details');}}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <StatusIndicator status={getStatusColor(agent.status)} size="md" />
+                  <div>
+                    <div className="font-mono text-sm font-bold">{agent.callsign}</div>
+                    <div className="text-xs text-muted-foreground">LVL {agent.level} • {agent.distance.toFixed(1)}km</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={getThreatBadgeVariant(agent.threatLevel)} size="sm">
+                    {agent.threatLevel}
+                  </Badge>
+                  <Badge variant={getStatusBadgeVariant(agent.status)} size="sm">
+                    {agent.status}
+                  </Badge>
+                </div>
+              </div>
+
+              {agent.status === 'ACTIVE' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center space-x-1">
+                        <Heart className="w-3 h-3 text-destructive" />
+                        <span>Health</span>
+                      </span>
+                      <span>{agent.health}%</span>
+                    </div>
+                    <Progress value={agent.health} className="h-1.5" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center space-x-1">
+                        <Shield className="w-3 h-3 text-primary" />
+                        <span>Armor</span>
+                      </span>
+                      <span>{agent.armor}%</span>
+                    </div>
+                    <Progress value={agent.armor} className="h-1.5" />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  <span>{agent.location}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span>{agent.lastSeen}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Rogue Agent Alert */}
+          {rogueAgents.length > 0 && (
+            <div className="border-t border-destructive/30 pt-4 mt-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <AlertTriangle className="w-4 h-4 text-destructive animate-status-blink" />
+                <h4 className="text-destructive text-sm font-bold tracking-wider">ROGUE AGENTS DETECTED</h4>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {rogueAgents.length} ROGUE AGENT{rogueAgents.length > 1 ? 'S' : ''} OPERATING IN HOSTILE TERRITORY
+              </div>
+              <div className="text-xs text-destructive mt-1 font-mono">
+                ⚠ ELIMINATION PROTOCOL AUTHORIZED ⚠
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <HolographicPanel variant="stable" className="shd-corner-brackets">
+        {viewMode === 'details' && selectedAgent ? (
+          <HolographicPanel variant="stable" className="space-y-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <StatusIndicator status={getStatusColor(agent.status)} size="md" />
-                <div>
-                  <div className="font-mono text-sm font-bold">{agent.callsign}</div>
-                  <div className="text-xs text-muted-foreground">LVL {agent.level} • {agent.distance.toFixed(1)}km</div>
-                </div>
-              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {setViewMode('list'); setSelectedAgent(null);}}
+              >
+                ← Back to List
+              </Button>
               <div className="flex items-center gap-2">
-                <Badge variant={getThreatBadgeVariant(agent.threatLevel)} size="sm">
-                  {agent.threatLevel}
-                </Badge>
-                <Badge variant={getStatusBadgeVariant(agent.status)} size="sm">
-                  {agent.status}
+                <StatusIndicator status={getStatusColor(selectedAgent.status)} size="sm" />
+                <Badge variant={getStatusBadgeVariant(selectedAgent.status)} size="sm">
+                  {selectedAgent.status}
                 </Badge>
               </div>
             </div>
 
-            {agent.status === 'ACTIVE' && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center space-x-1">
-                      <Heart className="w-3 h-3 text-destructive" />
-                      <span>Health</span>
-                    </span>
-                    <span>{agent.health}%</span>
-                  </div>
-                  <Progress value={agent.health} className="h-1.5" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center space-x-1">
-                      <Shield className="w-3 h-3 text-primary" />
-                      <span>Armor</span>
-                    </span>
-                    <span>{agent.armor}%</span>
-                  </div>
-                  <Progress value={agent.armor} className="h-1.5" />
-                </div>
+            <div className="space-y-4">
+              {/* Agent Header */}
+              <div className="text-center">
+                <h3 className="text-tactical text-xl font-bold tracking-wider">
+                  {selectedAgent.callsign}
+                </h3>
+                <p className="text-muted-foreground font-mono text-sm">
+                  Level {selectedAgent.level} Division Agent • ID: {selectedAgent.id}
+                </p>
               </div>
-            )}
 
-            <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <span>{agent.location}</span>
+              {/* Vital Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                <LiveMetric
+                  label="Health"
+                  value={selectedAgent.health}
+                  unit="%"
+                  status={selectedAgent.health > 80 ? 'good' : selectedAgent.health > 50 ? 'warning' : 'critical'}
+                  threshold={{ good: 80, warning: 50 }}
+                />
+                <LiveMetric
+                  label="Armor"
+                  value={selectedAgent.armor}
+                  unit="%"
+                  status={selectedAgent.armor > 70 ? 'good' : selectedAgent.armor > 40 ? 'warning' : 'critical'}
+                  threshold={{ good: 70, warning: 40 }}
+                />
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{agent.lastSeen}</span>
-              </div>
-            </div>
-          </div>
-        ))}
 
-        {/* Rogue Agent Alert */}
-        {rogueAgents.length > 0 && (
-          <div className="border-t border-destructive/30 pt-4 mt-6">
-            <div className="flex items-center space-x-2 mb-3">
-              <AlertTriangle className="w-4 h-4 text-destructive animate-status-blink" />
-              <h4 className="text-destructive text-sm font-bold tracking-wider">ROGUE AGENTS DETECTED</h4>
+              {/* Skills */}
+              <Card variant="tactical">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">SKILL TREE</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-3 h-3 text-destructive" />
+                        Medical
+                      </span>
+                      <span>{selectedAgent.skillTree.medical}%</span>
+                    </div>
+                    <Progress value={selectedAgent.skillTree.medical} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="flex items-center gap-1">
+                        <Wrench className="w-3 h-3 text-warning" />
+                        Tech
+                      </span>
+                      <span>{selectedAgent.skillTree.tech}%</span>
+                    </div>
+                    <Progress value={selectedAgent.skillTree.tech} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="flex items-center gap-1">
+                        <Shield className="w-3 h-3 text-success" />
+                        Security
+                      </span>
+                      <span>{selectedAgent.skillTree.security}%</span>
+                    </div>
+                    <Progress value={selectedAgent.skillTree.security} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Equipment */}
+              <Card variant="tactical">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">EQUIPMENT</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Primary:</span>
+                    <span>{selectedAgent.equipment.primaryWeapon}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Secondary:</span>
+                    <span>{selectedAgent.equipment.secondaryWeapon}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Special:</span>
+                    <span>{selectedAgent.equipment.specialGear}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Armor:</span>
+                    <span>{selectedAgent.equipment.armor}</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Combat Stats */}
+              <Card variant="tactical">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">COMBAT STATISTICS</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-destructive">
+                      {(selectedAgent.stats.dps / 1000).toFixed(0)}K
+                    </div>
+                    <div className="text-xs text-muted-foreground">DPS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-success">
+                      {(selectedAgent.stats.toughness / 1000).toFixed(0)}K
+                    </div>
+                    <div className="text-xs text-muted-foreground">TOUGHNESS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-warning">
+                      {(selectedAgent.stats.skillPower / 1000).toFixed(0)}K
+                    </div>
+                    <div className="text-xs text-muted-foreground">SKILL PWR</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-mono font-bold text-info">
+                      {selectedAgent.stats.accuracy}%
+                    </div>
+                    <div className="text-xs text-muted-foreground">ACCURACY</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Mission Data */}
+              <Card variant="tactical">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">MISSION DATA</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Last Mission:</span>
+                    <span>{selectedAgent.lastMission}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Extractions:</span>
+                    <span className="text-success">{selectedAgent.extractions}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Eliminations:</span>
+                    <span className="text-destructive">{selectedAgent.eliminations}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Distance:</span>
+                    <span>{selectedAgent.distance.toFixed(1)} km</span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {rogueAgents.length} ROGUE AGENT{rogueAgents.length > 1 ? 'S' : ''} OPERATING IN HOSTILE TERRITORY
+          </HolographicPanel>
+        ) : (
+          <HolographicPanel variant="stable" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-primary" />
+                <CardTitle className="text-lg">DIVISION AGENTS</CardTitle>
+              </div>
+              <div className="flex items-center gap-4">
+                <TacticalSwitch
+                  checked={autoTrack}
+                  onCheckedChange={setAutoTrack}
+                  label="Auto Track"
+                  size="sm"
+                />
+                <div className="text-sm text-muted-foreground font-mono">
+                  {activeAgents.length}/{totalAgents} ACTIVE
+                </div>
+              </div>
             </div>
-            <div className="text-xs text-destructive mt-1 font-mono">
-              ⚠ ELIMINATION PROTOCOL AUTHORIZED ⚠
+
+            {/* Agent Summary */}
+            <div className="grid grid-cols-4 gap-4 mt-4">
+              <div className="text-center">
+                <div className="text-lg font-mono font-bold text-success">
+                  {activeAgents.length}
+                </div>
+                <div className="text-xs text-muted-foreground">ACTIVE</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-mono font-bold text-destructive">
+                  {rogueAgents.length}
+                </div>
+                <div className="text-xs text-muted-foreground">ROGUE</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-mono font-bold text-primary">
+                  {agents.filter(a => a.isWatched).length}
+                </div>
+                <div className="text-xs text-muted-foreground">WATCHED</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-mono font-bold text-warning">
+                  {agents.filter(a => a.threatLevel === 'HIGH' || a.threatLevel === 'CRITICAL').length}
+                </div>
+                <div className="text-xs text-muted-foreground">THREATS</div>
+              </div>
             </div>
-          </div>
+
+            <CardContent className="space-y-3">
+              {agents.map((agent) => (
+                <div key={agent.id} className="tactical-panel p-3 space-y-3 hover:border-primary/50 transition-all duration-300 cursor-pointer"
+                     onClick={() => {setSelectedAgent(agent); setViewMode('details');}}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <StatusIndicator status={getStatusColor(agent.status)} size="md" />
+                      <div>
+                        <div className="font-mono text-sm font-bold">{agent.callsign}</div>
+                        <div className="text-xs text-muted-foreground">LVL {agent.level} • {agent.distance.toFixed(1)}km</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getThreatBadgeVariant(agent.threatLevel)} size="sm">
+                        {agent.threatLevel}
+                      </Badge>
+                      <Badge variant={getStatusBadgeVariant(agent.status)} size="sm">
+                        {agent.status}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {agent.status === 'ACTIVE' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="flex items-center space-x-1">
+                            <Heart className="w-3 h-3 text-destructive" />
+                            <span>Health</span>
+                          </span>
+                          <span>{agent.health}%</span>
+                        </div>
+                        <Progress value={agent.health} className="h-1.5" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="flex items-center space-x-1">
+                            <Shield className="w-3 h-3 text-primary" />
+                            <span>Armor</span>
+                          </span>
+                          <span>{agent.armor}%</span>
+                        </div>
+                        <Progress value={agent.armor} className="h-1.5" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      <span>{agent.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{agent.lastSeen}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Rogue Agent Alert */}
+              {rogueAgents.length > 0 && (
+                <div className="border-t border-destructive/30 pt-4 mt-6">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <AlertTriangle className="w-4 h-4 text-destructive animate-status-blink" />
+                    <h4 className="text-destructive text-sm font-bold tracking-wider">ROGUE AGENTS DETECTED</h4>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {rogueAgents.length} ROGUE AGENT{rogueAgents.length > 1 ? 'S' : ''} OPERATING IN HOSTILE TERRITORY
+                  </div>
+                  <div className="text-xs text-destructive mt-1 font-mono">
+                    ⚠ ELIMINATION PROTOCOL AUTHORIZED ⚠
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </HolographicPanel>
         )}
-      </CardContent>
-    </Card>
+      </HolographicPanel>
+    </div>
   );
 }

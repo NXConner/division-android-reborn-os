@@ -9,9 +9,9 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: "border border-card-border",
-        tactical: "tactical-border bg-gradient-card",
+        tactical: "tactical-border bg-gradient-card shd-hex-border shd-radial-glow",
         holographic: "holographic-panel",
-        elevated: "border border-card-border bg-card-elevated shadow-tactical",
+        elevated: "border border-card-border bg-card-elevated shadow-tactical shd-corner-brackets",
         ghost: "border-0 bg-transparent",
       }
     },
@@ -42,7 +42,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn("flex flex-col space-y-1.5 p-6 card-header-accent", className)}
     {...props}
   />
 ))
