@@ -8,6 +8,7 @@ import StatusBar from "@/components/isac/StatusBar"
 import ThemeToggle from "@/components/ui/theme-toggle"
 import { APP_NAME, APP_VERSION, BUILD_ID, SETTINGS_KEYS } from "@/lib/constants"
 import { getBooleanSetting, setBooleanSetting, ISAC_EVENTS } from "@/lib/settings"
+import { VoiceLauncher } from "@/components/ui/voice-launcher"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -179,6 +180,9 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
           <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-tactical-scan" />
           <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-tactical-scan" style={{ animationDelay: '1.5s' }} />
         </div>
+
+        {/* Voice Assistant Launcher */}
+        <VoiceLauncher />
       </div>
     )
   }
