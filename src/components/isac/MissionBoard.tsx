@@ -97,7 +97,7 @@ export default function MissionBoard() {
   };
 
   return (
-    <div className="status-panel space-y-4">
+    <div className="status-panel space-y-4 shd-hex-border shd-radial-glow">
       <div className="flex items-center justify-between">
         <h3 className="text-tactical text-lg font-bold tracking-wider">MISSION BOARD</h3>
         <div className="text-sm text-muted-foreground">
@@ -109,7 +109,7 @@ export default function MissionBoard() {
         {missions.map((mission) => (
           <div 
             key={mission.id} 
-            className={`tactical-border p-4 space-y-3 transition-all duration-300 hover:shadow-tactical cursor-pointer ${
+            className={`tactical-border p-4 space-y-3 transition-all duration-300 hover:shadow-tactical cursor-pointer shd-corner-brackets ${
               mission.status === 'ACTIVE' ? 'ring-1 ring-primary' : ''
             } ${mission.type === 'CLASSIFIED' ? 'bg-destructive/5' : ''}`}
           >

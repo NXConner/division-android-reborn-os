@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, Line, LineChart } from 'recharts';
+import ErrorBoundary from '@/components/ui/error-boundary';
+import ErrorFallback from '@/components/ui/error-fallback';
 
 const barData = [
   { mission: 'Alpha', success: 12, failure: 2 },
@@ -34,16 +36,18 @@ export default function ReportsPage() {
           <CardTitle>MISSION OUTCOMES</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={barConfig} className="w-full">
-            <BarChart data={barData}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="mission" tickLine={false} axisLine={false} tickMargin={8} />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Bar dataKey="success" fill="var(--color-success)" radius={4} />
-              <Bar dataKey="failure" fill="var(--color-failure)" radius={4} />
-              <ChartLegend verticalAlign="top" content={<ChartLegendContent />} />
-            </BarChart>
-          </ChartContainer>
+          <ErrorBoundary fallback={<ErrorFallback title="MISSION OUTCOMES" message="Chart failed to render." />}> 
+            <ChartContainer config={barConfig} className="w-full">
+              <BarChart data={barData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="mission" tickLine={false} axisLine={false} tickMargin={8} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <Bar dataKey="success" fill="var(--color-success)" radius={4} />
+                <Bar dataKey="failure" fill="var(--color-failure)" radius={4} />
+                <ChartLegend verticalAlign="top" content={<ChartLegendContent />} />
+              </BarChart>
+            </ChartContainer>
+          </ErrorBoundary>
         </CardContent>
       </Card>
 
@@ -52,15 +56,17 @@ export default function ReportsPage() {
           <CardTitle>INTEL COLLECTION OVER TIME</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={lineConfig} className="w-full">
-            <LineChart data={lineData}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={8} />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Line dataKey="intel" stroke="var(--color-intel)" strokeWidth={2} dot={false} />
-              <ChartLegend verticalAlign="top" content={<ChartLegendContent />} />
-            </LineChart>
-          </ChartContainer>
+          <ErrorBoundary fallback={<ErrorFallback title="INTEL COLLECTION OVER TIME" message="Chart failed to render." />}> 
+            <ChartContainer config={lineConfig} className="w-full">
+              <LineChart data={lineData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={8} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <Line dataKey="intel" stroke="var(--color-intel)" strokeWidth={2} dot={false} />
+                <ChartLegend verticalAlign="top" content={<ChartLegendContent />} />
+              </LineChart>
+            </ChartContainer>
+          </ErrorBoundary>
         </CardContent>
       </Card>
     </div>

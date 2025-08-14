@@ -1,10 +1,14 @@
 import * as React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Navigation } from "@/components/ui/navigation"
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react"
 import StatusBar from "@/components/isac/StatusBar"
+import ThemeToggle from "@/components/ui/theme-toggle"
+import { APP_NAME, APP_VERSION, BUILD_ID, SETTINGS_KEYS } from "@/lib/constants"
+import { getBooleanSetting, setBooleanSetting, ISAC_EVENTS } from "@/lib/settings"
+import { VoiceLauncher } from "@/components/ui/voice-launcher"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -15,6 +19,23 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
   ({ children, className, ...props }, ref) => {
     const [sidebarOpen, setSidebarOpen] = useState(true)
     const [sidebarCompact, setSidebarCompact] = useState(false)
+
+    useEffect(() => {
+      setSidebarCompact(getBooleanSetting(SETTINGS_KEYS.SIDEBAR_COMPACT, false))
+    }, [])
+
+    useEffect(() => {
+      setBooleanSetting(SETTINGS_KEYS.SIDEBAR_COMPACT, sidebarCompact)
+    }, [sidebarCompact])
+
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const custom = e as CustomEvent<boolean>
+        setSidebarCompact(Boolean(custom.detail))
+      }
+      window.addEventListener(ISAC_EVENTS.UPDATE_SIDEBAR, handler as EventListener)
+      return () => window.removeEventListener(ISAC_EVENTS.UPDATE_SIDEBAR, handler as EventListener)
+    }, [])
 
     return (
       <div
@@ -76,8 +97,8 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
             <div className="p-4 border-t border-border">
               {!sidebarCompact && (
                 <div className="text-xs text-muted-foreground font-mono space-y-1">
-                  <div>ISAC OS v2.47.1</div>
-                  <div>BUILD 20241215</div>
+                  <div>{APP_NAME} v{APP_VERSION}</div>
+                  <div>BUILD {BUILD_ID}</div>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
                     <span>SYSTEM ONLINE</span>
@@ -130,6 +151,8 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
                     BACKUP
                   </Button>
                 </div>
+                <div className="h-6 w-px bg-border" />
+                <ThemeToggle />
               </div>
             </div>
 
@@ -157,6 +180,9 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
           <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-tactical-scan" />
           <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-tactical-scan" style={{ animationDelay: '1.5s' }} />
         </div>
+
+        {/* Voice Assistant Launcher */}
+        <VoiceLauncher />
       </div>
     )
   }

@@ -120,6 +120,19 @@ const navigationItems: NavigationItem[] = [
   }
 ]
 
+const prefetchers: Record<string, (() => Promise<unknown>) | undefined> = {
+  "/": () => import("@/pages/IsacOS"),
+  "/agents": () => import("@/pages/AgentsPage"),
+  "/missions": () => import("@/pages/MissionsPage"),
+  "/map": () => import("@/pages/MapPage"),
+  "/diagnostics": () => import("@/pages/DiagnosticsPage"),
+  "/intel": () => import("@/pages/IntelPage"),
+  "/comms": () => import("@/pages/CommsPage"),
+  "/terminal": () => import("@/pages/TerminalPage"),
+  "/reports": () => import("@/pages/ReportsPage"),
+  "/settings": () => import("@/pages/SettingsPage"),
+}
+
 export interface NavigationProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof navigationVariants> {
@@ -149,11 +162,15 @@ const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
           const isActive = item.path === location.pathname
           const variant = isActive ? "active" : "default"
 
+          const prefetch = () => prefetchers[item.path]?.().catch(() => {})
+
           return (
             <Link
               key={item.id}
               to={item.path}
               onClick={() => onNavigate?.(item)}
+              onMouseEnter={prefetch}
+              onFocus={prefetch}
               className={cn(
                 navigationVariants({ variant }),
                 item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",

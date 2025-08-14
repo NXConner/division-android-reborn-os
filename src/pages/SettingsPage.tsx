@@ -1,11 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TacticalSwitch } from '@/components/ui/tactical-switch';
+import { getBooleanSetting, setBooleanSetting, emitCustomEvent, ISAC_EVENTS } from '@/lib/settings';
+import { SETTINGS_KEYS } from '@/lib/constants';
 
 export default function SettingsPage() {
-  const [alerts, setAlerts] = useState(true);
-  const [autoUpdate, setAutoUpdate] = useState(true);
-  const [compactSidebar, setCompactSidebar] = useState(false);
+  const [alerts, setAlerts] = useState(getBooleanSetting(SETTINGS_KEYS.ALERTS_ENABLED, true));
+  const [autoUpdate, setAutoUpdate] = useState(getBooleanSetting(SETTINGS_KEYS.AUTO_UPDATE, true));
+  const [compactSidebar, setCompactSidebar] = useState(getBooleanSetting(SETTINGS_KEYS.SIDEBAR_COMPACT, false));
+
+  useEffect(() => {
+    setBooleanSetting(SETTINGS_KEYS.ALERTS_ENABLED, alerts);
+  }, [alerts]);
+
+  useEffect(() => {
+    setBooleanSetting(SETTINGS_KEYS.AUTO_UPDATE, autoUpdate);
+  }, [autoUpdate]);
+
+  useEffect(() => {
+    setBooleanSetting(SETTINGS_KEYS.SIDEBAR_COMPACT, compactSidebar);
+    emitCustomEvent(ISAC_EVENTS.UPDATE_SIDEBAR, compactSidebar);
+  }, [compactSidebar]);
 
   return (
     <div className="space-y-6">

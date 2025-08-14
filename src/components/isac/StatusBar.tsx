@@ -20,6 +20,7 @@ import {
 import { StatusIndicator } from '@/components/ui/status-indicator';
 import { Badge } from '@/components/ui/badge';
 import { HolographicPanel } from '@/components/ui/holographic-panel';
+import { APP_VERSION } from '@/lib/constants';
 
 interface SystemMetrics {
   cpu: number;
@@ -283,7 +284,7 @@ export default function StatusBar() {
             UPTIME: 72:14:33
           </span>
           <span className="text-muted-foreground">
-            BUILD: ISAC-OS v2.47.1
+            BUILD: ISAC-OS v{APP_VERSION}
           </span>
         </div>
         
