@@ -1,14 +1,15 @@
 import AgentPanel from '@/components/isac/AgentPanel';
 import MissionBoard from '@/components/isac/MissionBoard';
 import SystemDiagnostics from '@/components/isac/SystemDiagnostics';
-import TacticalMap from '@/components/isac/TacticalMap';
+import { Suspense, lazy, useState } from 'react';
+import ErrorBoundary from '@/components/ui/error-boundary';
+import ErrorFallback from '@/components/ui/error-fallback';
 import { HolographicPanel } from '@/components/ui/holographic-panel';
 import { LiveMetric } from '@/components/ui/live-metric';
 import { CommandInput } from '@/components/ui/command-input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
 import { 
   Shield, 
   Activity, 
@@ -19,6 +20,8 @@ import {
   Database,
   Eye
 } from 'lucide-react';
+
+const TacticalMapLazy = lazy(() => import('@/components/isac/TacticalMap'));
 
 export default function IsacOS() {
   const [systemCommand, setSystemCommand] = useState('');
@@ -127,8 +130,14 @@ export default function IsacOS() {
       
       {/* Bottom Row - Full Width */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <TacticalMap />
-        <SystemDiagnostics />
+        <ErrorBoundary fallback={<ErrorFallback title="TACTICAL MAP" message="Map module failed to load." />}> 
+          <Suspense fallback={<div className="h-64 rounded-sm border border-border bg-background-elevated animate-pulse" aria-busy="true" aria-live="polite" />}> 
+            <TacticalMapLazy />
+          </Suspense>
+        </ErrorBoundary>
+        <ErrorBoundary fallback={<ErrorFallback title="SYSTEM DIAGNOSTICS" message="Diagnostics module failed to load." />}> 
+          <SystemDiagnostics />
+        </ErrorBoundary>
       </div>
 
       {/* System Alerts */}
