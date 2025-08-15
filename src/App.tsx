@@ -21,6 +21,7 @@ const CommsPage = lazy(() => import("./pages/CommsPage"));
 const TerminalPage = lazy(() => import("./pages/TerminalPage"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const EstimatorPage = lazy(() => import("./pages/EstimatorPage"));
 
 function Devtools() {
   const [DevtoolsComp, setDevtoolsComp] = useState<null | React.ComponentType>(null)
@@ -150,6 +151,17 @@ const App = () => (
                   <Layout>
                     <Suspense fallback={<RouteFallback />}>
                       <SettingsPage />
+                    </Suspense>
+                  </Layout>
+                }
+              />
+
+              <Route
+                path="/estimator"
+                element={
+                  <Layout>
+                    <Suspense fallback={<RouteFallback />}>
+                      <EstimatorPage />
                     </Suspense>
                   </Layout>
                 }

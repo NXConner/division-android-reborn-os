@@ -12,7 +12,8 @@ import {
   FileText,
   Target,
   Radio,
-  Database
+  Database,
+  Calculator
 } from "lucide-react"
 
 const navigationVariants = cva(
@@ -112,6 +113,13 @@ const navigationItems: NavigationItem[] = [
     description: "Detailed mission analytics"
   },
   {
+    id: "estimator",
+    label: "ASPHALT ESTIMATOR",
+    icon: Calculator,
+    path: "/estimator",
+    description: "Repair, sealcoat, line striping estimates"
+  },
+  {
     id: "settings",
     label: "SYSTEM CONFIG",
     icon: Settings,
@@ -131,6 +139,7 @@ const prefetchers: Record<string, (() => Promise<unknown>) | undefined> = {
   "/terminal": () => import("@/pages/TerminalPage"),
   "/reports": () => import("@/pages/ReportsPage"),
   "/settings": () => import("@/pages/SettingsPage"),
+  "/estimator": () => import("@/pages/EstimatorPage"),
 }
 
 export interface NavigationProps
