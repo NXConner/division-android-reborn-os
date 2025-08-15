@@ -107,12 +107,118 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 25 85% 70%;
     --sidebar-border: 25 40% 25%;
     --sidebar-ring: 25 95% 65%;
+
+    /* Wallpaper image variable (data URL or none) */
+    --app-wallpaper: none;
+    --app-wallpaper-opacity: 0.18;
+    --app-wallpaper-blur: 0px;
   }
 
   .dark {
     /* Keep dark mode overrides but ensure they align with tactical theme */
     --background: 220 15% 6%;
     --background-elevated: 220 15% 8%;
+  }
+
+  /* === THEME VARIANTS (20+) === */
+  .theme-division {
+    --primary: 25 95% 65%;
+    --accent: 25 85% 60%;
+  }
+
+  .theme-emerald {
+    --primary: 145 75% 55%;
+    --accent: 145 60% 40%;
+  }
+
+  .theme-ocean {
+    --primary: 195 85% 55%;
+    --accent: 195 70% 40%;
+  }
+
+  .theme-royal {
+    --primary: 255 85% 65%;
+    --accent: 255 65% 45%;
+  }
+
+  .theme-rose {
+    --primary: 340 80% 65%;
+    --accent: 340 60% 45%;
+  }
+
+  .theme-sunrise {
+    --primary: 30 95% 62%;
+    --accent: 15 90% 55%;
+  }
+
+  .theme-forest {
+    --primary: 110 60% 50%;
+    --accent: 110 40% 35%;
+  }
+
+  .theme-amethyst {
+    --primary: 280 70% 65%;
+    --accent: 280 55% 45%;
+  }
+
+  .theme-cyberpunk {
+    --primary: 310 85% 60%;
+    --accent: 55 95% 60%;
+  }
+
+  .theme-matrix {
+    --primary: 130 80% 55%;
+    --accent: 130 60% 35%;
+  }
+
+  .theme-steel {
+    --primary: 210 10% 70%;
+    --accent: 210 15% 50%;
+  }
+
+  .theme-desert {
+    --primary: 35 70% 55%;
+    --accent: 20 60% 45%;
+  }
+
+  .theme-aurora {
+    --primary: 200 85% 65%;
+    --accent: 280 70% 60%;
+  }
+
+  .theme-volcanic {
+    --primary: 2 80% 56%;
+    --accent: 28 80% 50%;
+  }
+
+  .theme-ice {
+    --primary: 190 70% 85%;
+    --accent: 200 60% 65%;
+  }
+
+  .theme-cobalt {
+    --primary: 220 90% 60%;
+    --accent: 230 80% 55%;
+  }
+
+  .theme-violet {
+    --primary: 270 85% 65%;
+    --accent: 280 70% 60%;
+  }
+
+  .theme-lime {
+    --primary: 90 85% 55%;
+    --accent: 100 70% 40%;
+  }
+
+  .theme-copper {
+    --primary: 20 80% 50%;
+    --accent: 28 75% 45%;
+  }
+
+  .theme-crimson {
+    --primary: 350 80% 55%;
+    --accent: 10 75% 50%;
   }
 }
 
@@ -126,7 +232,11 @@ All colors MUST be HSL.
     background-image: 
       radial-gradient(circle at 20% 80%, hsl(25 95% 65% / 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, hsl(25 95% 65% / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, hsl(25 95% 65% / 0.01) 0%, transparent 50%);
+      radial-gradient(circle at 40% 40%, hsl(25 95% 65% / 0.01) 0%, transparent 50%),
+      var(--app-wallpaper);
+    background-size: auto, auto, auto, cover;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-position: center center, center center, center center, center center;
   }
 
   @media (prefers-reduced-motion: reduce) {

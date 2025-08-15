@@ -7,8 +7,9 @@ import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react"
 import StatusBar from "@/components/isac/StatusBar"
 import ThemeToggle from "@/components/ui/theme-toggle"
 import { APP_NAME, APP_VERSION, BUILD_ID, SETTINGS_KEYS } from "@/lib/constants"
-import { getBooleanSetting, setBooleanSetting, ISAC_EVENTS } from "@/lib/settings"
+import { getBooleanSetting, setBooleanSetting, ISAC_EVENTS, getStringSetting } from "@/lib/settings"
 import { VoiceLauncher } from "@/components/ui/voice-launcher"
+import { loadAndApplyWallpaperFromSettings } from "@/lib/theme"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -35,6 +36,14 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
       }
       window.addEventListener(ISAC_EVENTS.UPDATE_SIDEBAR, handler as EventListener)
       return () => window.removeEventListener(ISAC_EVENTS.UPDATE_SIDEBAR, handler as EventListener)
+    }, [])
+
+    useEffect(() => {
+      loadAndApplyWallpaperFromSettings(
+        (k, d) => getStringSetting(k, d),
+        (k, d) => getBooleanSetting(k, d),
+        { ENABLED: SETTINGS_KEYS.WALLPAPER_ENABLED, DATA: SETTINGS_KEYS.WALLPAPER_DATA_URL }
+      )
     }, [])
 
     return (
