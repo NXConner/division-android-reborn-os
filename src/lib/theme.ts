@@ -6,6 +6,7 @@ export type ThemeDefinition = {
 export const THEMES: ThemeDefinition[] = [
   { id: "dark", label: "Dark" },
   { id: "theme-division", label: "Division Orange" },
+  { id: "theme-deus-ex", label: "Deus Ex" },
   { id: "theme-emerald", label: "Emerald" },
   { id: "theme-ocean", label: "Ocean" },
   { id: "theme-royal", label: "Royal" },
