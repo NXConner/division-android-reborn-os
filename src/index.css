@@ -220,6 +220,12 @@ All colors MUST be HSL.
     --primary: 350 80% 55%;
     --accent: 10 75% 50%;
   }
+
+  /* Deus Ex — classic meets modern cyberpunk: amber gold primary with electric cyan accents */
+  .theme-deus-ex {
+    --primary: 45 95% 62%;
+    --accent: 190 90% 60%;
+  }
 }
 
 @layer base {
